@@ -1,35 +1,36 @@
 // src/models/leave.model.ts
-import { Schema, model, Document, Types } from "mongoose"
+import { Schema, model, Document } from "mongoose"
+import { generateId } from "../utils/generate-id"
 
-export type LeaveStatus = "pending" | "approved" | "rejected"
-export type LeaveType = "leave" | "excuse"
+export type LeaveType = "excuse" | "leave"
 
 export interface LeaveDocument extends Document {
   id: string
-  user: Types.ObjectId
-  type: LeaveType
-  reason: string
-  status: LeaveStatus
-  from: Date
-  to: Date
+  classId: string
+  studentId: string
+  leaveAt: Date
+  leaveType: LeaveType
+  acceptedBy?: string
+  acceptedAt?: Date
+  rejectedBy?: string
+  rejectedAt?: Date
   createdAt: Date
+  updatedAt: Date
 }
 
 const leaveSchema = new Schema<LeaveDocument>(
   {
-    id: { type: String, default: () => `leave_${Date.now()}` },
-    user: { type: Schema.Types.ObjectId, ref: "Users", required: true },
-    type: { type: String, enum: ["leave", "excuse"], required: true },
-    reason: { type: String, required: true },
-    status: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
-    },
-    from: { type: Date, required: true },
-    to: { type: Date, required: true },
+    id: { type: String, default: () => `lv_${generateId()}` },
+    classId: { type: String, required: true },
+    studentId: { type: String, required: true },
+    leaveAt: { type: Date, required: true },
+    leaveType: { type: String, enum: ["excuse", "leave"], required: true },
+    acceptedBy: String,
+    acceptedAt: Date,
+    rejectedBy: String,
+    rejectedAt: Date,
   },
-  { timestamps: true, versionKey: false }
+  { timestamps: true, toJSON: { virtuals: true, versionKey: false } }
 )
 
-export const LeavesCollection = model<LeaveDocument>("Leaves", leaveSchema)
+export const LeaveCollection = model<LeaveDocument>("Leave", leaveSchema)

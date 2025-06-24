@@ -1,24 +1,26 @@
 // src/models/report.model.ts
-import { Schema, model, Document, Types } from "mongoose"
+import { Schema, model, Document } from "mongoose"
+import { generateId } from "../utils/generate-id"
 
 export interface ReportDocument extends Document {
   id: string
-  reporter: Types.ObjectId
-  targetUser?: Types.ObjectId
-  targetClass?: Types.ObjectId
+  classId: string
+  teacherId: string
+  title: string
   content: string
   createdAt: Date
+  updatedAt: Date
 }
 
 const reportSchema = new Schema<ReportDocument>(
   {
-    id: { type: String, default: () => `report_${Date.now()}` },
-    reporter: { type: Schema.Types.ObjectId, ref: "Users", required: true },
-    targetUser: { type: Schema.Types.ObjectId, ref: "Users" },
-    targetClass: { type: Schema.Types.ObjectId, ref: "Classes" },
+    id: { type: String, default: () => `rep_${generateId()}` },
+    classId: { type: String, required: true },
+    teacherId: { type: String, required: true },
+    title: { type: String, required: true },
     content: { type: String, required: true },
   },
-  { timestamps: true, versionKey: false }
+  { timestamps: true, toJSON: { virtuals: true, versionKey: false } }
 )
 
-export const ReportsCollection = model<ReportDocument>("Reports", reportSchema)
+export const ReportCollection = model<ReportDocument>("Report", reportSchema)

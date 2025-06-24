@@ -1,7 +1,7 @@
 // src/services/user.service.ts
 import { FilterQuery } from "mongoose"
 import { UsersCollection, UserDocument, UserRole } from "../models/user.model"
-import { LeavesCollection, LeaveDocument } from "../models/leave.model"
+import { LeaveCollection, LeaveDocument } from "../models/leave.model"
 
 export class UserService {
   static async createUser(data: Partial<UserDocument>) {
@@ -44,11 +44,11 @@ export class UserService {
 
   // --- Leaves ---
   static async getUserLeaves(userId: string) {
-    return LeavesCollection.find({ user: userId }).lean()
+    return LeaveCollection.find({ user: userId }).lean()
   }
 
   static async acceptLeave(userId: string, leaveId: string) {
-    return LeavesCollection.findOneAndUpdate(
+    return LeaveCollection.findOneAndUpdate(
       { id: leaveId, user: userId },
       { status: "accepted" },
       { new: true }
@@ -56,7 +56,7 @@ export class UserService {
   }
 
   static async rejectLeave(userId: string, leaveId: string) {
-    return LeavesCollection.findOneAndUpdate(
+    return LeaveCollection.findOneAndUpdate(
       { id: leaveId, user: userId },
       { status: "rejected" },
       { new: true }

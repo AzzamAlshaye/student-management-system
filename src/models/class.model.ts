@@ -1,23 +1,41 @@
 // src/models/class.model.ts
-import { Schema, model, Document, Types } from "mongoose"
+import { Schema, model, Document } from "mongoose"
+import { generateId } from "../utils/generate-id"
 
 export interface ClassDocument extends Document {
   id: string
   name: string
-  students: Types.ObjectId[] // refs to Users
-  teachers: Types.ObjectId[] // refs to Users
-  principal: Types.ObjectId // ref to Users
+  description?: string
+  location?: string
+  capacity?: number
+  dateStartAt: Date
+  dateEndAt: Date
+  timeStartAt: string
+  timeEndAt: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 const classSchema = new Schema<ClassDocument>(
   {
-    id: { type: String, default: () => `class_${Date.now()}` },
+    id: { type: String, default: () => `class_${generateId()}` },
     name: { type: String, required: true },
-    students: [{ type: Schema.Types.ObjectId, ref: "Users" }],
-    teachers: [{ type: Schema.Types.ObjectId, ref: "Users" }],
-    principal: { type: Schema.Types.ObjectId, ref: "Users", required: true },
+    description: String,
+    location: String,
+    capacity: Number,
+    dateStartAt: { type: Date, required: true },
+    dateEndAt: { type: Date, required: true },
+    timeStartAt: { type: String, required: true },
+    timeEndAt: { type: String, required: true },
   },
-  { timestamps: true, versionKey: false }
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+      versionKey: false,
+      transform: (_doc, ret) => ({ ...ret, _id: undefined }),
+    },
+  }
 )
 
 export const ClassesCollection = model<ClassDocument>("Classes", classSchema)

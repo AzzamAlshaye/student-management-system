@@ -1,5 +1,4 @@
 // src/controllers/auth.controller.ts
-
 import { RequestHandler } from "express"
 import { AuthService } from "../service/auth.service"
 import { CREATED, OK } from "../utils/http-status"
