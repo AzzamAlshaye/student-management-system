@@ -1,16 +1,13 @@
+// src/routes/user.routes.ts
 import { Router } from "express"
-import { signup, signin, signout } from "../controllers/auth.controller"
-import { authorized } from "../middleware/auth.middleware"
+import * as userCtrl from "../controllers/user.controller"
 
 const router = Router()
 
-// POST /auth/signup
-router.post("/signup", signup)
-
-// POST /auth/signin
-router.post("/signin", signin)
-
-// POST /auth/signout  (requires valid JWT)
-router.post("/signout", authorized, signout)
+router.post("/", userCtrl.createUser)
+router.get("/", userCtrl.getAllUsers)
+router.get("/:id", userCtrl.getUserById)
+router.put("/:id", userCtrl.updateUser)
+router.delete("/:id", userCtrl.deleteUser)
 
 export default router

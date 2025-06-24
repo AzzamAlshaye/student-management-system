@@ -5,6 +5,7 @@ import cors from "cors"
 import helmet from "helmet"
 import morgan from "morgan"
 import logger from "./utils/logger"
+import adminRoutes from "./routes/admin.routes"
 import { dev, port } from "./utils/helpers"
 import userRouter from "./routes/user.routes"
 import { connectDB } from "./config/database"
@@ -34,6 +35,7 @@ app.use(express.urlencoded({ extended: true }))
 // ─── Routes ────────────────────────────────────────────────────────────────────
 // Make sure this comes *after* express.json() and *before* your error handler
 app.use("/auth", userRouter)
+app.use("/api/admin", adminRoutes)
 
 app.use(errorHandler)
 // Health check
