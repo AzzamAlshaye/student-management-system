@@ -1,6 +1,6 @@
 // src/controllers/leave.controller.ts
 import { Request, Response, NextFunction } from "express"
-import { LeaveService } from "../service/leave.service"
+import LeaveService from "../service/leave.service"
 import { CREATED } from "../utils/http-status"
 
 export class LeaveController {
@@ -10,15 +10,15 @@ export class LeaveController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { id } = req.params // classId
+      const classId = req.params.id
       const { studentId, leaveAt, leaveType } = req.body
-      const lv = await LeaveService.applyLeave(
-        id,
+      const leave = await LeaveService.applyLeave(
+        classId,
         studentId,
         new Date(leaveAt),
         leaveType
       )
-      res.status(CREATED).json(lv)
+      res.status(CREATED).json(leave)
     } catch (err) {
       next(err)
     }
@@ -30,9 +30,8 @@ export class LeaveController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { id } = req.params
-      const list = await LeaveService.getLeavesForClass(id)
-      res.json(list)
+      const leaves = await LeaveService.getLeavesForClass(req.params.id)
+      res.json(leaves)
     } catch (err) {
       next(err)
     }
@@ -44,13 +43,11 @@ export class LeaveController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { id, leaveId } = req.params
-      const approver = req.user!.id
-      const updated = await LeaveService.acceptLeave(id, leaveId, approver)
-      if (!updated) {
-        res.sendStatus(404)
-        return
-      }
+      const updated = await LeaveService.acceptLeave(
+        req.params.id,
+        req.params.leaveId,
+        req.user!.id
+      )
       res.json(updated)
     } catch (err) {
       next(err)
@@ -63,16 +60,16 @@ export class LeaveController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { id, leaveId } = req.params
-      const approver = req.user!.id
-      const updated = await LeaveService.rejectLeave(id, leaveId, approver)
-      if (!updated) {
-        res.sendStatus(404)
-        return
-      }
+      const updated = await LeaveService.rejectLeave(
+        req.params.id,
+        req.params.leaveId,
+        req.user!.id
+      )
       res.json(updated)
     } catch (err) {
       next(err)
     }
   }
 }
+
+export default LeaveController

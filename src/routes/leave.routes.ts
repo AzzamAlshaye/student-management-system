@@ -1,30 +1,28 @@
 // src/routes/leave.routes.ts
 import { Router } from "express"
 import { authenticate, authorize } from "../middleware/auth.middleware"
-import { LeaveController } from "../controllers/leave.controller"
+import LeaveController from "../controllers/leave.controller"
 
 const router = Router({ mergeParams: true })
 
-// Apply for leave/excuse (student only)
+// Apply for leave (student only)
 router.post(
   "/leaves",
   authenticate,
-  authorize("student"),
+  authorize("student", "admin"),
   LeaveController.applyLeave
 )
 
-// Get leaves for a class (RBAC inside controller)
+// Get leaves for a class
 router.get("/leaves", authenticate, LeaveController.getLeavesForClass)
 
-// Accept a specific leave (admin/principal/teacher)
+// Accept/reject (admin/principal/teacher)
 router.put(
   "/leaves/:leaveId/accept",
   authenticate,
   authorize("admin", "principal", "teacher"),
   LeaveController.acceptLeave
 )
-
-// Reject a specific leave (admin/principal/teacher)
 router.put(
   "/leaves/:leaveId/reject",
   authenticate,

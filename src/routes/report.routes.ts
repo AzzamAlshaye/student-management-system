@@ -9,7 +9,7 @@ const router = Router({ mergeParams: true })
 router.post(
   "/reports",
   authenticate,
-  authorize("teacher"),
+  authorize("teacher", "admin"),
   ReportController.createReport
 )
 
