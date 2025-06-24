@@ -1,44 +1,67 @@
 // src/services/user.service.ts
-import { UsersCollection, UserDocument } from "../models/user.model"
+import { FilterQuery } from "mongoose"
+import { UsersCollection, UserDocument, UserRole } from "../models/user.model"
+import { LeavesCollection, LeaveDocument } from "../models/leave.model"
 
-export interface CreateUserDTO {
-  email: string
-  password: string
-  role?: UserDocument["role"]
-}
-
-export interface UpdateUserDTO {
-  email?: string
-  password?: string
-  role?: UserDocument["role"]
-}
-
-export async function createUser(data: CreateUserDTO): Promise<UserDocument> {
-  const user = await UsersCollection.create(data)
-  return user
-}
-
-export async function getAllUsers(): Promise<UserDocument[]> {
-  return UsersCollection.find().exec()
-}
-
-export async function getUserById(id: string): Promise<UserDocument | null> {
-  return UsersCollection.findOne({ id }).exec()
-}
-
-export async function updateUser(
-  id: string,
-  data: UpdateUserDTO
-): Promise<UserDocument | null> {
-  if (data.password) {
-    // let schema pre-save hook hash it
+export class UserService {
+  static async createUser(data: Partial<UserDocument>) {
+    return UsersCollection.create(data)
   }
-  return UsersCollection.findOneAndUpdate({ id }, data, {
-    new: true,
-    runValidators: true,
-  }).exec()
+
+  static async getAllUsers() {
+    return UsersCollection.find().lean()
+  }
+
+  static async getUsersByRole(roles: UserRole[]) {
+    return UsersCollection.find({ role: { $in: roles } }).lean()
+  }
+
+  static async getRelatedStudents(teacherId: string) {
+    // TODO: implement real relationship lookup (e.g. via Class assignments)
+    return UsersCollection.find({
+      role: "student" /* filter by teacherId */,
+    }).lean()
+  }
+
+  static async getRelatedTeachers(studentId: string) {
+    // TODO: implement real relationship lookup
+    return UsersCollection.find({
+      role: "teacher" /* filter by studentId */,
+    }).lean()
+  }
+
+  static async getUserById(id: string) {
+    return UsersCollection.findOne({ id }).lean()
+  }
+
+  static async updateUser(id: string, data: Partial<UserDocument>) {
+    return UsersCollection.findOneAndUpdate({ id }, data, { new: true }).lean()
+  }
+
+  static async deleteUser(id: string) {
+    return UsersCollection.findOneAndDelete({ id }).lean()
+  }
+
+  // --- Leaves ---
+  static async getUserLeaves(userId: string) {
+    return LeavesCollection.find({ user: userId }).lean()
+  }
+
+  static async acceptLeave(userId: string, leaveId: string) {
+    return LeavesCollection.findOneAndUpdate(
+      { id: leaveId, user: userId },
+      { status: "accepted" },
+      { new: true }
+    ).lean()
+  }
+
+  static async rejectLeave(userId: string, leaveId: string) {
+    return LeavesCollection.findOneAndUpdate(
+      { id: leaveId, user: userId },
+      { status: "rejected" },
+      { new: true }
+    ).lean()
+  }
 }
 
-export async function deleteUser(id: string): Promise<UserDocument | null> {
-  return UsersCollection.findOneAndDelete({ id }).exec()
-}
+export default UserService
