@@ -218,7 +218,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"name\":\"Math 101\",\"description\":\"Basic Math\"}"
+              "raw": "{\"name\":\"Math 101\",\"description\":\"Basic Math\",\"dateStartAt\":\"2025-07-01T00:00:00.000Z\",\"dateEndAt\":\"2025-12-15T00:00:00.000Z\",\"timeStartAt\":\"08:00\",\"timeEndAt\":\"10:00\"}"
             }
           }
         },
@@ -266,7 +266,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"studentIds\":[\"student1\",\"student2\"]}"
+              "raw": "{\"studentIds\":[\"user_01JYHCZQYK8HQ8S820AWAYHVB3\",\"user_02ABCDEF123456\"]}"
             }
           }
         },
@@ -285,7 +285,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"teacherIds\":[\"teacher1\",\"teacher2\"]}"
+              "raw": "{\"teacherIds\":[\"user_03TEACHER123\"]}"
             }
           }
         },
@@ -333,7 +333,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"studentId\":\"student1\",\"status\":\"present\"}"
+              "raw": "{\"attendeeId\":\"user_01JYHCZQYK8HQ8S820AWAYHVB3\"}"
             }
           }
         },
@@ -369,7 +369,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"studentId\":\"student1\",\"leaveAt\":\"2025-07-01\",\"leaveType\":\"sick\"}"
+              "raw": "{\"studentId\":\"user_01JYHCZQYK8HQ8S820AWAYHVB3\",\"leaveAt\":\"2025-07-01\",\"leaveType\":\"sick\"}"
             }
           }
         },

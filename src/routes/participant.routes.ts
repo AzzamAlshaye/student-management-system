@@ -1,7 +1,7 @@
 // src/routes/participant.routes.ts
 import { Router } from "express"
 import { authenticate, authorize } from "../middleware/auth.middleware"
-import { ParticipantController } from "../controllers/participant.controller"
+import ParticipantController from "../controllers/participant.controller"
 
 const router = Router({ mergeParams: true })
 

@@ -1,10 +1,10 @@
 // src/controllers/participant.controller.ts
 import { Request, Response, NextFunction } from "express"
-import { ParticipantService } from "../service/participant.service"
+import ParticipantService from "../service/participant.service"
 import { CREATED } from "../utils/http-status"
 
 export class ParticipantController {
-  /** Add one or more students to a class (admin only) */
+  /** POST /classes/:id/students */
   static async addStudentsToClass(
     req: Request,
     res: Response,
@@ -12,18 +12,20 @@ export class ParticipantController {
   ): Promise<void> {
     try {
       const classId = req.params.id
-      const { studentIds } = req.body // e.g. [ "student1", "student2", ... ]
-      const added = await ParticipantService.addStudentsToClass(
+      const studentIds = req.body.studentIds as string[]
+      const participants = await ParticipantService.addStudentsToClass(
         classId,
         studentIds
       )
-      res.status(CREATED).json(added)
+      res
+        .status(CREATED)
+        .json({ message: "Students added to class", participants })
     } catch (err) {
       next(err)
     }
   }
 
-  /** Add one or more teachers to a class (admin only) */
+  /** POST /classes/:id/teachers */
   static async addTeachersToClass(
     req: Request,
     res: Response,
@@ -31,18 +33,20 @@ export class ParticipantController {
   ): Promise<void> {
     try {
       const classId = req.params.id
-      const { teacherIds } = req.body // e.g. [ "teacher1", "teacher2", ... ]
-      const added = await ParticipantService.addTeachersToClass(
+      const teacherIds = req.body.teacherIds as string[]
+      const participants = await ParticipantService.addTeachersToClass(
         classId,
         teacherIds
       )
-      res.status(CREATED).json(added)
+      res
+        .status(CREATED)
+        .json({ message: "Teachers added to class", participants })
     } catch (err) {
       next(err)
     }
   }
 
-  /** List all students in a class */
+  /** GET /classes/:id/students */
   static async getClassStudents(
     req: Request,
     res: Response,
@@ -51,13 +55,13 @@ export class ParticipantController {
     try {
       const classId = req.params.id
       const students = await ParticipantService.getClassStudents(classId)
-      res.json(students)
+      res.json({ students })
     } catch (err) {
       next(err)
     }
   }
 
-  /** List all teachers in a class */
+  /** GET /classes/:id/teachers */
   static async getClassTeachers(
     req: Request,
     res: Response,
@@ -66,9 +70,11 @@ export class ParticipantController {
     try {
       const classId = req.params.id
       const teachers = await ParticipantService.getClassTeachers(classId)
-      res.json(teachers)
+      res.json({ teachers })
     } catch (err) {
       next(err)
     }
   }
 }
+
+export default ParticipantController

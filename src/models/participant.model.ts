@@ -12,11 +12,19 @@ export interface ParticipantDocument extends Document {
 
 const participantSchema = new Schema<ParticipantDocument>(
   {
-    id: { type: String, default: () => `ptc_${generateId()}` },
+    id: {
+      type: String,
+      default: () => `part_${generateId()}`,
+      unique: true,
+    },
     classId: { type: String, required: true },
     userId: { type: String, required: true },
   },
-  { timestamps: true, toJSON: { virtuals: true, versionKey: false } }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true, versionKey: false },
+    toObject: { virtuals: true, versionKey: false },
+  }
 )
 
 export const ParticipantCollection = model<ParticipantDocument>(
