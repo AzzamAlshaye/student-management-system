@@ -2,8 +2,10 @@
 import { Request, Response, NextFunction } from "express"
 import UserService from "../service/user.service"
 import { UserRole } from "../models/user.model"
+import { CREATED, OK } from "../utils/http-status"
 
 export class UserController {
+  /** Create a new user */
   static async createUser(
     req: Request,
     res: Response,
@@ -11,14 +13,15 @@ export class UserController {
   ): Promise<void> {
     try {
       const user = await UserService.createUser(req.body)
-      res.status(201).json(user)
+      res.status(CREATED).json(user)
     } catch (err) {
       next(err)
     }
   }
 
+  /** List users (RBAC based on req.user.role) */
   static async getUsers(
-    req: Request,
+    req: Request & { user?: any },
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -48,106 +51,96 @@ export class UserController {
     }
   }
 
+  /** Get a single user by ID (_id or custom id) */
   static async getUserById(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const { id } = req.params
-      const user = await UserService.getUserById(id)
-      if (!user) {
-        res.sendStatus(404)
-        return
-      }
+      const user = await UserService.getUserById(req.params.id)
       res.json(user)
     } catch (err) {
       next(err)
     }
   }
 
+  /** Update a user by ID */
   static async updateUser(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const { id } = req.params
-      const updated = await UserService.updateUser(id, req.body)
-      if (!updated) {
-        res.sendStatus(404)
-        return
-      }
+      const updated = await UserService.updateUser(req.params.id, req.body)
       res.json(updated)
     } catch (err) {
       next(err)
     }
   }
 
+  /** Delete a user by ID, returning the deleted document */
   static async deleteUser(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const { id } = req.params
-      const deleted = await UserService.deleteUser(id)
-      if (!deleted) {
-        res.sendStatus(404)
-        return
-      }
-      res.sendStatus(204)
+      const deletedUser = await UserService.deleteUser(req.params.id)
+      res.status(OK).json({
+        success: true,
+        message: "User deleted successfully",
+        user: deletedUser,
+      })
     } catch (err) {
       next(err)
     }
   }
 
-  // ─── Leaves ─────────────────────────────────────────
+  // ─── Leaves Endpoints ───────────────────────────────────
 
+  /** List all leave records for a user */
   static async getUserLeaves(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const { userId } = req.params
-      const leaves = await UserService.getUserLeaves(userId)
+      const leaves = await UserService.getUserLeaves(req.params.userId)
       res.json(leaves)
     } catch (err) {
       next(err)
     }
   }
 
+  /** Accept a specific leave */
   static async acceptLeave(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const { userId, leaveId } = req.params
-      const leave = await UserService.acceptLeave(userId, leaveId)
-      if (!leave) {
-        res.sendStatus(404)
-        return
-      }
+      const leave = await UserService.acceptLeave(
+        req.params.userId,
+        req.params.leaveId
+      )
       res.json(leave)
     } catch (err) {
       next(err)
     }
   }
 
+  /** Reject a specific leave */
   static async rejectLeave(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const { userId, leaveId } = req.params
-      const leave = await UserService.rejectLeave(userId, leaveId)
-      if (!leave) {
-        res.sendStatus(404)
-        return
-      }
+      const leave = await UserService.rejectLeave(
+        req.params.userId,
+        req.params.leaveId
+      )
       res.json(leave)
     } catch (err) {
       next(err)

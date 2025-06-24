@@ -1,9 +1,26 @@
 {
   "info": {
     "name": "Student Management API",
-    "_postman_id": "49171f7b-1d78-428b-ad21-e799f8151c62",
+    "_postman_id": "4a57e347-7e43-4a19-b277-d9e1a79a3b34",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const t = pm.collectionVariables.get('token');",
+          "if (t) {",
+          "  pm.request.headers.upsert({",
+          "    key: 'Authorization',",
+          "    value: 'Bearer ' + t",
+          "  });",
+          "}"
+        ]
+      }
+    }
+  ],
   "item": [
     {
       "name": "Authentication",
@@ -12,12 +29,7 @@
           "name": "Signup",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
               "raw": "{{base_url}}/auth/signup",
               "host": ["{{base_url}}"],
@@ -25,20 +37,29 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"email\": \"admin@example.com\", \"password\": \"password\"}"
+              "raw": "{\"email\":\"admin@example.com\",\"password\":\"password\"}"
             }
           }
         },
         {
           "name": "Signin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var json = pm.response.json();",
+                  "  pm.collectionVariables.set('token', json.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
             "url": {
               "raw": "{{base_url}}/auth/signin",
               "host": ["{{base_url}}"],
@@ -46,7 +67,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"email\": \"admin@example.com\", \"password\": \"password\"}"
+              "raw": "{\"email\":\"admin@example.com\",\"password\":\"password\"}"
             }
           }
         },
@@ -54,12 +75,7 @@
           "name": "Signout",
           "request": {
             "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/auth/signout",
               "host": ["{{base_url}}"],
@@ -77,14 +93,8 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
               "raw": "{{base_url}}/users",
@@ -93,7 +103,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"email\": \"user1@example.com\", \"password\": \"password\", \"role\": \"student\"}"
+              "raw": "{\"email\":\"user1@example.com\",\"password\":\"password\",\"role\":\"student\"}"
             }
           }
         },
@@ -101,12 +111,7 @@
           "name": "Get All Users",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/users",
               "host": ["{{base_url}}"],
@@ -118,12 +123,7 @@
           "name": "Get User by ID",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/users/{{userId}}",
               "host": ["{{base_url}}"],
@@ -136,14 +136,8 @@
           "request": {
             "method": "PUT",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
               "raw": "{{base_url}}/users/{{userId}}",
@@ -152,7 +146,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"email\": \"updated@example.com\"}"
+              "raw": "{\"email\":\"updated@example.com\"}"
             }
           }
         },
@@ -160,12 +154,7 @@
           "name": "Delete User",
           "request": {
             "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/users/{{userId}}",
               "host": ["{{base_url}}"],
@@ -177,12 +166,7 @@
           "name": "Get User Leaves",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/users/{{userId}}/leaves",
               "host": ["{{base_url}}"],
@@ -194,12 +178,7 @@
           "name": "Accept User Leave",
           "request": {
             "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/users/{{userId}}/leaves/{{leaveId}}/accept",
               "host": ["{{base_url}}"],
@@ -211,12 +190,7 @@
           "name": "Reject User Leave",
           "request": {
             "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/users/{{userId}}/leaves/{{leaveId}}/reject",
               "host": ["{{base_url}}"],
@@ -234,14 +208,8 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
               "raw": "{{base_url}}/classes",
@@ -250,7 +218,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"name\": \"Math 101\", \"description\": \"Basic Math\"}"
+              "raw": "{\"name\":\"Math 101\",\"description\":\"Basic Math\"}"
             }
           }
         },
@@ -258,12 +226,7 @@
           "name": "Get All Classes",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/classes",
               "host": ["{{base_url}}"],
@@ -275,12 +238,7 @@
           "name": "Get Class by ID",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}",
               "host": ["{{base_url}}"],
@@ -298,14 +256,8 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}/students",
@@ -314,7 +266,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"studentIds\": [\"student1\", \"student2\"]}"
+              "raw": "{\"studentIds\":[\"student1\",\"student2\"]}"
             }
           }
         },
@@ -323,14 +275,8 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}/teachers",
@@ -339,7 +285,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"teacherIds\": [\"teacher1\", \"teacher2\"]}"
+              "raw": "{\"teacherIds\":[\"teacher1\",\"teacher2\"]}"
             }
           }
         },
@@ -347,12 +293,7 @@
           "name": "Get Class Students",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}/students",
               "host": ["{{base_url}}"],
@@ -364,12 +305,7 @@
           "name": "Get Class Teachers",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}/teachers",
               "host": ["{{base_url}}"],
@@ -387,14 +323,8 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}/attendance",
@@ -403,7 +333,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"studentId\": \"student1\", \"status\": \"present\"}"
+              "raw": "{\"studentId\":\"student1\",\"status\":\"present\"}"
             }
           }
         },
@@ -411,12 +341,7 @@
           "name": "Get Attendance",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}/attendance",
               "host": ["{{base_url}}"],
@@ -434,14 +359,8 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}/leaves",
@@ -450,7 +369,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"studentId\": \"student1\", \"leaveAt\": \"2025-07-01\", \"leaveType\": \"sick\"}"
+              "raw": "{\"studentId\":\"student1\",\"leaveAt\":\"2025-07-01\",\"leaveType\":\"sick\"}"
             }
           }
         },
@@ -458,12 +377,7 @@
           "name": "Get Class Leaves",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}/leaves",
               "host": ["{{base_url}}"],
@@ -475,12 +389,7 @@
           "name": "Accept Class Leave",
           "request": {
             "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}/leaves/{{leaveId}}/accept",
               "host": ["{{base_url}}"],
@@ -498,12 +407,7 @@
           "name": "Reject Class Leave",
           "request": {
             "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}/leaves/{{leaveId}}/reject",
               "host": ["{{base_url}}"],
@@ -527,14 +431,8 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
             ],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}/reports",
@@ -543,7 +441,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"title\": \"Midterm Report\", \"content\": \"Students performed well overall.\"}"
+              "raw": "{\"title\":\"Midterm Report\",\"content\":\"Students performed well overall.\"}"
             }
           }
         },
@@ -551,12 +449,7 @@
           "name": "Get Class Reports",
           "request": {
             "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{token}}"
-              }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": {
               "raw": "{{base_url}}/classes/{{classId}}/reports",
               "host": ["{{base_url}}"],
@@ -568,13 +461,7 @@
     }
   ],
   "variable": [
-    {
-      "key": "base_url",
-      "value": "http://localhost:3000"
-    },
-    {
-      "key": "token",
-      "value": ""
-    }
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" }
   ]
 }
