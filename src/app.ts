@@ -8,10 +8,11 @@ import logger from "./utils/logger"
 // import adminRoutes from "./routes/admin.routes"
 import { dev, port } from "./utils/helpers"
 import userRouter from "./routes/user.routes"
-import classRouter from "./routes//class.routes"
-import participantRouter from "./routes//participant.routes"
-import attendanceRouter from "./routes//attendance.routes"
-import leaveRouter from "./routes//leave.routes"
+import authRouter from "./routes/auth.routes"
+import classRouter from "./routes/class.routes"
+import participantRouter from "./routes/participant.routes"
+import attendanceRouter from "./routes/attendance.routes"
+import leaveRouter from "./routes/leave.routes"
 import reportRouter from "./routes/report.routes"
 import { connectDB } from "./config/database"
 import { OK, INTERNAL_SERVER_ERROR } from "./utils/http-status"
@@ -39,7 +40,8 @@ app.use(express.urlencoded({ extended: true }))
 
 // ─── Routes ────────────────────────────────────────────────────────────────────
 // Make sure this comes *after* express.json() and *before* your error handler
-app.use("/auth", userRouter)
+app.use("/auth", authRouter)
+app.use("/users", userRouter)
 // app.use("/api/admin", adminRoutes)
 app.use("/classes", classRouter)
 app.use("/classes/:id", participantRouter)

@@ -1,5 +1,4 @@
 // src/middleware/auth.middleware.ts
-
 import { Request, Response, NextFunction } from "express"
 import jwt from "jsonwebtoken"
 import { UsersCollection, UserDocument, UserRole } from "../models/user.model"
@@ -34,7 +33,8 @@ export const authenticate = async (
       exp: number
     }
 
-    const user = await UsersCollection.findById(decoded.sub)
+    // lookup by your custom `id` field (because sub === user.id)
+    const user = await UsersCollection.findOne({ id: decoded.sub })
     if (!user) {
       throw new AppError("User no longer exists", UNAUTHORIZED)
     }
