@@ -1,5 +1,5 @@
-// src/routes/report.routes.ts
 import { Router } from "express"
+import { body, param } from "express-validator"
 import { authenticate, authorize } from "../middleware/auth.middleware"
 import { ReportController } from "../controllers/report.controller"
 
@@ -10,6 +10,9 @@ router.post(
   "/reports",
   authenticate,
   authorize("teacher", "admin"),
+  param("id").isString().withMessage("Class ID is required"),
+  body("title").isString().notEmpty().withMessage("Title is required"),
+  body("content").isString().notEmpty().withMessage("Content is required"),
   ReportController.createReport
 )
 
@@ -18,6 +21,7 @@ router.get(
   "/reports",
   authenticate,
   authorize("admin", "principal"),
+  param("id").isString().withMessage("Class ID is required"),
   ReportController.getReportsForClass
 )
 

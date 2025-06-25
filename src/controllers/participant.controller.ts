@@ -1,15 +1,20 @@
-// src/controllers/participant.controller.ts
 import { Request, Response, NextFunction } from "express"
+import { validationResult } from "express-validator"
 import ParticipantService from "../service/participant.service"
 import { CREATED } from "../utils/http-status"
 
 export class ParticipantController {
-  /** POST /classes/:id/students */
   static async addStudentsToClass(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
+
     try {
       const classId = req.params.id
       const studentIds = req.body.studentIds as string[]
@@ -25,12 +30,17 @@ export class ParticipantController {
     }
   }
 
-  /** POST /classes/:id/teachers */
   static async addTeachersToClass(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
+
     try {
       const classId = req.params.id
       const teacherIds = req.body.teacherIds as string[]
@@ -46,12 +56,17 @@ export class ParticipantController {
     }
   }
 
-  /** GET /classes/:id/students */
   static async getClassStudents(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
+
     try {
       const classId = req.params.id
       const students = await ParticipantService.getClassStudents(classId)
@@ -61,12 +76,17 @@ export class ParticipantController {
     }
   }
 
-  /** GET /classes/:id/teachers */
   static async getClassTeachers(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
+
     try {
       const classId = req.params.id
       const teachers = await ParticipantService.getClassTeachers(classId)

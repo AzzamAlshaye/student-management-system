@@ -1,16 +1,17 @@
-// src/controllers/user.controller.ts
 import { Request, Response, NextFunction } from "express"
+import { validationResult } from "express-validator"
 import UserService from "../service/user.service"
 import { UserRole } from "../models/user.model"
 import { CREATED, OK } from "../utils/http-status"
 
 export class UserController {
-  /** Create a new user */
-  static async createUser(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  static async createUser(req: Request, res: Response, next: NextFunction) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
+
     try {
       const user = await UserService.createUser(req.body)
       res.status(CREATED).json(user)
@@ -19,12 +20,11 @@ export class UserController {
     }
   }
 
-  /** List users (RBAC based on req.user.role) */
   static async getUsers(
     req: Request & { user?: any },
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ) {
     try {
       const me = req.user as { id: string; role: UserRole }
       let users
@@ -51,12 +51,13 @@ export class UserController {
     }
   }
 
-  /** Get a single user by ID (_id or custom id) */
-  static async getUserById(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  static async getUserById(req: Request, res: Response, next: NextFunction) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
+
     try {
       const user = await UserService.getUserById(req.params.id)
       res.json(user)
@@ -65,12 +66,13 @@ export class UserController {
     }
   }
 
-  /** Update a user by ID */
-  static async updateUser(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  static async updateUser(req: Request, res: Response, next: NextFunction) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
+
     try {
       const updated = await UserService.updateUser(req.params.id, req.body)
       res.json(updated)
@@ -79,12 +81,13 @@ export class UserController {
     }
   }
 
-  /** Delete a user by ID, returning the deleted document */
-  static async deleteUser(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  static async deleteUser(req: Request, res: Response, next: NextFunction) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
+
     try {
       const deletedUser = await UserService.deleteUser(req.params.id)
       res.status(OK).json({
@@ -97,14 +100,12 @@ export class UserController {
     }
   }
 
-  // ─── “Me” Endpoints ────────────────────────────────
-
-  /** Student → their teachers */
+  // “Me” and sub-routes don’t need additional body/param validation, since they rely on auth/userId from middleware:
   static async getMyTeachers(
     req: Request & { user?: any },
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ) {
     try {
       const me = req.user as { id: string; role: UserRole }
       const teachers = await UserService.getRelatedTeachers(me.id)
@@ -114,12 +115,11 @@ export class UserController {
     }
   }
 
-  /** Teacher → their students */
   static async getMyStudents(
     req: Request & { user?: any },
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ) {
     try {
       const me = req.user as { id: string; role: UserRole }
       const students = await UserService.getRelatedStudents(me.id)
@@ -129,14 +129,16 @@ export class UserController {
     }
   }
 
-  // ─── Param-based Related Users ─────────────────────
-
-  /** List related students for a given userId (admin/teacher) */
   static async getRelatedStudents(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
     try {
       const students = await UserService.getRelatedStudents(req.params.userId)
       res.json(students)
@@ -145,12 +147,16 @@ export class UserController {
     }
   }
 
-  /** List related teachers for a given userId (admin/student) */
   static async getRelatedTeachers(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> {
+  ) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
     try {
       const teachers = await UserService.getRelatedTeachers(req.params.userId)
       res.json(teachers)
@@ -159,14 +165,12 @@ export class UserController {
     }
   }
 
-  // ─── Leaves Endpoints ───────────────────────────────
-
-  /** List all leave records for a user */
-  static async getUserLeaves(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  static async getUserLeaves(req: Request, res: Response, next: NextFunction) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
     try {
       const leaves = await UserService.getUserLeaves(req.params.userId)
       res.json(leaves)
@@ -175,12 +179,12 @@ export class UserController {
     }
   }
 
-  /** Accept a specific leave */
-  static async acceptLeave(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  static async acceptLeave(req: Request, res: Response, next: NextFunction) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
     try {
       const leave = await UserService.acceptLeave(
         req.params.userId,
@@ -192,12 +196,12 @@ export class UserController {
     }
   }
 
-  /** Reject a specific leave */
-  static async rejectLeave(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  static async rejectLeave(req: Request, res: Response, next: NextFunction) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
     try {
       const leave = await UserService.rejectLeave(
         req.params.userId,

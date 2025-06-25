@@ -1,14 +1,16 @@
-// src/controllers/class.controller.ts
 import { Request, Response, NextFunction } from "express"
+import { validationResult } from "express-validator"
 import { ClassService } from "../service/class.service"
 import { CREATED } from "../utils/http-status"
 
 export class ClassController {
-  static async createClass(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  static async createClass(req: Request, res: Response, next: NextFunction) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
+
     try {
       const cls = await ClassService.createClass(req.body)
       res.status(CREATED).json(cls)
@@ -17,11 +19,7 @@ export class ClassController {
     }
   }
 
-  static async getClasses(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  static async getClasses(req: Request, res: Response, next: NextFunction) {
     try {
       const list = await ClassService.getClasses()
       res.json(list)
@@ -30,11 +28,13 @@ export class ClassController {
     }
   }
 
-  static async getClassById(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
+  static async getClassById(req: Request, res: Response, next: NextFunction) {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      res.status(400).json({ errors: errors.array() })
+      return
+    }
+
     try {
       const { id } = req.params
       const cls = await ClassService.getClassById(id)
@@ -43,34 +43,6 @@ export class ClassController {
         return
       }
       res.json(cls)
-    } catch (err) {
-      next(err)
-    }
-  }
-
-  static async getClassStudents(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { id } = req.params
-      const students = await ClassService.getClassStudents(id)
-      res.json(students)
-    } catch (err) {
-      next(err)
-    }
-  }
-
-  static async getClassTeachers(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { id } = req.params
-      const teachers = await ClassService.getClassTeachers(id)
-      res.json(teachers)
     } catch (err) {
       next(err)
     }
