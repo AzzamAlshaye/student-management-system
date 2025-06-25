@@ -1,7 +1,8 @@
-//src/services/user.service.ts
+// src/services/user.service.ts
 import { Types } from "mongoose"
 import { UsersCollection, UserDocument, UserRole } from "../models/user.model"
-import { LeaveCollection, LeaveDocument } from "../models/leave.model"
+import { LeaveCollection } from "../models/leave.model"
+import ParticipantService from "./participant.service"
 import { AppError } from "../utils/error"
 import { BAD_REQUEST, NOT_FOUND } from "../utils/http-status"
 
@@ -22,29 +23,30 @@ export class UserService {
     return UsersCollection.create(data)
   }
 
-  /** Get everyone (admin only) */
+  /** Admin: list all users */
   static async getAllUsers() {
     return UsersCollection.find().select("-password").lean()
   }
 
-  /** Get by role list (principal) */
+  /** Principal: list by roles */
   static async getUsersByRole(roles: UserRole[]) {
     return UsersCollection.find({ role: { $in: roles } })
       .select("-password")
       .lean()
   }
 
-  /** Stub: real teacher→students lookup */
-  static async getRelatedStudents(teacherId: string) {
-    return UsersCollection.find({ role: "student" }).select("-password").lean()
+  /** Teacher → their students */
+  static async getRelatedStudents(teacherId: string): Promise<UserDocument[]> {
+    return ParticipantService.getStudentsByTeacher(teacherId)
   }
 
-  /** Stub: real student→teachers lookup */
-  static async getRelatedTeachers(studentId: string) {
-    return UsersCollection.find({ role: "teacher" }).select("-password").lean()
+  /** Student → their teachers */
+  static async getRelatedTeachers(studentId: string): Promise<UserDocument[]> {
+    return ParticipantService.getTeachersByStudent(studentId)
   }
 
-  static async getUserById(id: string): Promise<UserDocument | null> {
+  /** Fetch a user by Mongo _id or custom id */
+  static async getUserById(id: string): Promise<UserDocument> {
     let user: UserDocument | null = null
     if (Types.ObjectId.isValid(id)) {
       user = await UsersCollection.findById(id).select("-password").lean()
@@ -58,7 +60,7 @@ export class UserService {
     return user
   }
 
-  /** Update by custom or ObjectId */
+  /** Update a user */
   static async updateUser(id: string, data: Partial<UserDocument>) {
     const filter = Types.ObjectId.isValid(id) ? { _id: id } : { id }
     const updated = await UsersCollection.findOneAndUpdate(filter, data, {
@@ -66,20 +68,18 @@ export class UserService {
     })
       .select("-password")
       .lean()
-
     if (!updated) {
       throw new AppError(`No user to update with id="${id}"`, NOT_FOUND)
     }
     return updated
   }
 
-  /** Delete by custom or ObjectId */
+  /** Delete a user */
   static async deleteUser(id: string) {
     const filter = Types.ObjectId.isValid(id) ? { _id: id } : { id }
     const deleted = await UsersCollection.findOneAndDelete(filter)
       .select("-password")
       .lean()
-
     if (!deleted) {
       throw new AppError(`No user to delete with id="${id}"`, NOT_FOUND)
     }
@@ -88,10 +88,12 @@ export class UserService {
 
   // ─── Leaves ───────────────────────────────────
 
+  /** List leaves for a user */
   static async getUserLeaves(userId: string) {
     return LeaveCollection.find({ user: userId }).lean()
   }
 
+  /** Accept a leave */
   static async acceptLeave(userId: string, leaveId: string) {
     const updated = await LeaveCollection.findOneAndUpdate(
       { id: leaveId, user: userId },
@@ -107,6 +109,7 @@ export class UserService {
     return updated
   }
 
+  /** Reject a leave */
   static async rejectLeave(userId: string, leaveId: string) {
     const updated = await LeaveCollection.findOneAndUpdate(
       { id: leaveId, user: userId },
