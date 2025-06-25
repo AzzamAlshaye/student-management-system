@@ -1,3 +1,4 @@
+// src/controllers/user.controller.ts
 import { Request, Response, NextFunction } from "express"
 import UserService from "../service/user.service"
 import { UserRole } from "../models/user.model"
@@ -96,9 +97,41 @@ export class UserController {
     }
   }
 
-  // ─── Related Users ────────────────────────────────────
+  // ─── “Me” Endpoints ────────────────────────────────
 
-  /** List related students for a teacher (or for admin) */
+  /** Student → their teachers */
+  static async getMyTeachers(
+    req: Request & { user?: any },
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const me = req.user as { id: string; role: UserRole }
+      const teachers = await UserService.getRelatedTeachers(me.id)
+      res.json(teachers)
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  /** Teacher → their students */
+  static async getMyStudents(
+    req: Request & { user?: any },
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const me = req.user as { id: string; role: UserRole }
+      const students = await UserService.getRelatedStudents(me.id)
+      res.json(students)
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  // ─── Param-based Related Users ─────────────────────
+
+  /** List related students for a given userId (admin/teacher) */
   static async getRelatedStudents(
     req: Request,
     res: Response,
@@ -112,7 +145,7 @@ export class UserController {
     }
   }
 
-  /** List related teachers for a student (or for admin) */
+  /** List related teachers for a given userId (admin/student) */
   static async getRelatedTeachers(
     req: Request,
     res: Response,
@@ -126,7 +159,7 @@ export class UserController {
     }
   }
 
-  // ─── Leaves Endpoints ───────────────────────────────────
+  // ─── Leaves Endpoints ───────────────────────────────
 
   /** List all leave records for a user */
   static async getUserLeaves(

@@ -1,3 +1,4 @@
+// src/routes/user.routes.ts
 import { Router } from "express"
 import UserController from "../controllers/user.controller"
 import { authenticate, authorize } from "../middleware/auth.middleware"
@@ -16,16 +17,32 @@ router.delete(
   UserController.deleteUser
 )
 
-// ─── Related Users ────────────────────────────────
-// Teachers can list their students; admins perhaps as well
+// ─── “Me” Endpoints ────────────────────────────────
+// Student fetches their teachers
+router.get(
+  "/teachers",
+  authenticate,
+  authorize("student"),
+  UserController.getMyTeachers
+)
+
+// Teacher fetches their students
+router.get(
+  "/students",
+  authenticate,
+  authorize("teacher"),
+  UserController.getMyStudents
+)
+
+// ─── Param-based Related Users ────────────────────
+// Teachers can list any teacher’s students; admins too
 router.get(
   "/:userId/students",
   authenticate,
   authorize("admin", "teacher"),
   UserController.getRelatedStudents
 )
-
-// Students can list their teachers; admins perhaps as well
+// Students can list any student’s teachers; admins too
 router.get(
   "/:userId/teachers",
   authenticate,
