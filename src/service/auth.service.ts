@@ -12,26 +12,6 @@ export interface AuthResult {
 }
 
 export class AuthService {
-  static async register(email: string, password: string): Promise<AuthResult> {
-    if (!email || !password) {
-      throw new AppError("Email and password are required", BAD_REQUEST)
-    }
-
-    const existing = await UsersCollection.findOne({ email })
-    if (existing) {
-      throw new AppError("Email already in use", BAD_REQUEST)
-    }
-
-    const user = await UsersCollection.create({ email, password })
-    const token = jwt.sign(
-      { sub: user.id },
-      jwtConfig.secret,
-      jwtConfig.accessToken.options
-    )
-
-    return { token }
-  }
-
   static async login(email: string, password: string): Promise<AuthResult> {
     if (!email || !password) {
       throw new AppError("Email and password are required", BAD_REQUEST)

@@ -4,19 +4,6 @@ import { AuthService } from "../service/auth.service"
 import { CREATED, OK } from "../utils/http-status"
 
 /**
- * Sign up a new user and return a JWT
- */
-export const signup: RequestHandler = async (req, res, next) => {
-  try {
-    const { email, password } = req.body
-    const { token } = await AuthService.register(email, password)
-    res.status(CREATED).json({ token })
-  } catch (err) {
-    next(err)
-  }
-}
-
-/**
  * Sign in an existing user and return a JWT
  */
 export const signin: RequestHandler = async (req, res, next) => {

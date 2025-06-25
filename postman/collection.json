@@ -26,22 +26,6 @@
       "name": "Authentication",
       "item": [
         {
-          "name": "Signup",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "url": {
-              "raw": "{{base_url}}/auth/signup",
-              "host": ["{{base_url}}"],
-              "path": ["auth", "signup"]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\"email\":\"admin@example.com\",\"password\":\"password\"}"
-            }
-          }
-        },
-        {
           "name": "Signin",
           "event": [
             {
