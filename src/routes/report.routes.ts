@@ -5,7 +5,7 @@ import { ReportController } from "../controllers/report.controller"
 
 const router = Router({ mergeParams: true })
 
-// Teacher creates a report for a class
+// Teacher or admin creates a report for a class
 router.post(
   "/reports",
   authenticate,
@@ -13,11 +13,11 @@ router.post(
   ReportController.createReport
 )
 
-// Admin, Principal, or Teacher views reports for a class
+// Admin or principal views reports for a class
 router.get(
   "/reports",
   authenticate,
-  authorize("admin", "principal", "teacher"),
+  authorize("admin", "principal"),
   ReportController.getReportsForClass
 )
 

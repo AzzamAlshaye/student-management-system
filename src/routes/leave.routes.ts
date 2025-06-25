@@ -9,24 +9,31 @@ const router = Router({ mergeParams: true })
 router.post(
   "/leaves",
   authenticate,
-  authorize("student", "admin"),
+  authorize("student"),
   LeaveController.applyLeave
 )
 
-// Get leaves for a class
-router.get("/leaves", authenticate, LeaveController.getLeavesForClass)
+// Get leaves for a class (principal, admin)
+router.get(
+  "/leaves",
+  authenticate,
+  authorize("principal", "admin"),
+  LeaveController.getLeavesForClass
+)
 
-// Accept/reject (admin/principal/teacher)
+// Accept a leave request (principal, admin)
 router.put(
   "/leaves/:leaveId/accept",
   authenticate,
-  authorize("admin", "principal", "teacher"),
+  authorize("principal", "admin"),
   LeaveController.acceptLeave
 )
+
+// Reject a leave request (principal, admin)
 router.put(
   "/leaves/:leaveId/reject",
   authenticate,
-  authorize("admin", "principal", "teacher"),
+  authorize("principal", "admin"),
   LeaveController.rejectLeave
 )
 

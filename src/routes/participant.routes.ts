@@ -21,10 +21,20 @@ router.post(
   ParticipantController.addTeachersToClass
 )
 
-// List students in class
-router.get("/students", authenticate, ParticipantController.getClassStudents)
+// List students in class (admin, principal, teacher)
+router.get(
+  "/students",
+  authenticate,
+  authorize("admin", "principal", "teacher"),
+  ParticipantController.getClassStudents
+)
 
-// List teachers in class
-router.get("/teachers", authenticate, ParticipantController.getClassTeachers)
+// List teachers in class (admin, principal, teacher)
+router.get(
+  "/teachers",
+  authenticate,
+  authorize("admin", "principal", "teacher"),
+  ParticipantController.getClassTeachers
+)
 
 export default router

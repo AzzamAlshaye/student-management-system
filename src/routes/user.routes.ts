@@ -5,10 +5,10 @@ import { authenticate, authorize } from "../middleware/auth.middleware"
 
 const router = Router()
 
-// ─── Users CRUD ────────────────────────────────────
+// ─── Users CRUD (admin only) ─────────────────────────
 router.post("/", authenticate, authorize("admin"), UserController.createUser)
-router.get("/", authenticate, UserController.getUsers)
-router.get("/:id", authenticate, UserController.getUserById)
+router.get("/", authenticate, authorize("admin"), UserController.getUsers)
+router.get("/:id", authenticate, authorize("admin"), UserController.getUserById)
 router.put("/:id", authenticate, authorize("admin"), UserController.updateUser)
 router.delete(
   "/:id",
@@ -17,16 +17,13 @@ router.delete(
   UserController.deleteUser
 )
 
-// ─── “Me” Endpoints ────────────────────────────────
-// Student fetches their teachers
+// ─── “Me” Endpoints ───────────────────────────────────
 router.get(
   "/teachers",
   authenticate,
   authorize("student", "admin"),
   UserController.getMyTeachers
 )
-
-// Teacher fetches their students
 router.get(
   "/students",
   authenticate,
@@ -34,15 +31,13 @@ router.get(
   UserController.getMyStudents
 )
 
-// ─── Param-based Related Users ────────────────────
-// Teachers can list any teacher’s students; admins too
+// ─── Related Users via Params ─────────────────────────
 router.get(
   "/:userId/students",
   authenticate,
   authorize("admin", "teacher"),
   UserController.getRelatedStudents
 )
-// Students can list any student’s teachers; admins too
 router.get(
   "/:userId/teachers",
   authenticate,
@@ -50,23 +45,26 @@ router.get(
   UserController.getRelatedTeachers
 )
 
-// ─── Leaves Sub-Routes ─────────────────────────────
+// ─── Leaves Sub-Routes ────────────────────────────────
+// View any user’s leaves (admin, principal, teacher, student)
 router.get(
   "/:userId/leaves",
   authenticate,
   authorize("admin", "principal", "teacher", "student"),
   UserController.getUserLeaves
 )
+
+// Accept/reject leave (principal, admin only)
 router.put(
   "/:userId/leaves/:leaveId/accept",
   authenticate,
-  authorize("admin", "principal", "teacher"),
+  authorize("principal", "admin"),
   UserController.acceptLeave
 )
 router.put(
   "/:userId/leaves/:leaveId/reject",
   authenticate,
-  authorize("admin", "principal", "teacher"),
+  authorize("principal", "admin"),
   UserController.rejectLeave
 )
 

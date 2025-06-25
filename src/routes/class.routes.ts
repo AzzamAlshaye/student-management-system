@@ -8,10 +8,20 @@ const router = Router()
 // Create a new class (admin only)
 router.post("/", authenticate, authorize("admin"), ClassController.createClass)
 
-// Read all classes (RBAC inside controller)
-router.get("/", authenticate, ClassController.getClasses)
+// Read all classes (admin, principal, teacher, student)
+router.get(
+  "/",
+  authenticate,
+  authorize("admin", "principal", "teacher", "student"),
+  ClassController.getClasses
+)
 
-// Read a single class by ID
-router.get("/:id", authenticate, ClassController.getClassById)
+// Read a single class by ID (admin, principal, teacher, student)
+router.get(
+  "/:id",
+  authenticate,
+  authorize("admin", "principal", "teacher", "student"),
+  ClassController.getClassById
+)
 
 export default router
