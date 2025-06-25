@@ -1,3 +1,4 @@
+//src/models/user.model.ts
 import { Schema, model, Document } from "mongoose"
 import bcrypt from "bcryptjs"
 import { generateId } from "../utils/generate-id"
@@ -32,6 +33,7 @@ const userSchema = new Schema<UserDocument>(
       type: String,
       required: true,
       minlength: 8,
+      select: false, // ← never returned unless explicitly requested
     },
     role: {
       type: String,

@@ -1,4 +1,3 @@
-// src/routes/user.routes.ts
 import { Router } from "express"
 import UserController from "../controllers/user.controller"
 import { authenticate, authorize } from "../middleware/auth.middleware"
@@ -15,6 +14,23 @@ router.delete(
   authenticate,
   authorize("admin"),
   UserController.deleteUser
+)
+
+// ─── Related Users ────────────────────────────────
+// Teachers can list their students; admins perhaps as well
+router.get(
+  "/:userId/students",
+  authenticate,
+  authorize("admin", "teacher"),
+  UserController.getRelatedStudents
+)
+
+// Students can list their teachers; admins perhaps as well
+router.get(
+  "/:userId/teachers",
+  authenticate,
+  authorize("admin", "student"),
+  UserController.getRelatedTeachers
 )
 
 // ─── Leaves Sub-Routes ─────────────────────────────

@@ -1,4 +1,3 @@
-// src/controllers/user.controller.ts
 import { Request, Response, NextFunction } from "express"
 import UserService from "../service/user.service"
 import { UserRole } from "../models/user.model"
@@ -92,6 +91,36 @@ export class UserController {
         message: "User deleted successfully",
         user: deletedUser,
       })
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  // ─── Related Users ────────────────────────────────────
+
+  /** List related students for a teacher (or for admin) */
+  static async getRelatedStudents(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const students = await UserService.getRelatedStudents(req.params.userId)
+      res.json(students)
+    } catch (err) {
+      next(err)
+    }
+  }
+
+  /** List related teachers for a student (or for admin) */
+  static async getRelatedTeachers(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const teachers = await UserService.getRelatedTeachers(req.params.userId)
+      res.json(teachers)
     } catch (err) {
       next(err)
     }

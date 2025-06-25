@@ -1,4 +1,4 @@
-// src/services/user.service.ts
+//src/services/user.service.ts
 import { Types } from "mongoose"
 import { UsersCollection, UserDocument, UserRole } from "../models/user.model"
 import { LeaveCollection, LeaveDocument } from "../models/leave.model"
@@ -12,7 +12,9 @@ export class UserService {
     if (!email || !role) {
       throw new AppError("Email and role are required", BAD_REQUEST)
     }
-    const existing = await UsersCollection.findOne({ email })
+    const existing = await UsersCollection.findOne({ email }).select(
+      "+password"
+    )
     if (existing) {
       const roleName = role.charAt(0).toUpperCase() + role.slice(1)
       throw new AppError(`${roleName} already exists`, BAD_REQUEST)
@@ -22,36 +24,33 @@ export class UserService {
 
   /** Get everyone (admin only) */
   static async getAllUsers() {
-    return UsersCollection.find().lean()
+    return UsersCollection.find().select("-password").lean()
   }
 
   /** Get by role list (principal) */
   static async getUsersByRole(roles: UserRole[]) {
-    return UsersCollection.find({ role: { $in: roles } }).lean()
+    return UsersCollection.find({ role: { $in: roles } })
+      .select("-password")
+      .lean()
   }
 
   /** Stub: real teacher→students lookup */
   static async getRelatedStudents(teacherId: string) {
-    return UsersCollection.find({ role: "student" }).lean()
+    return UsersCollection.find({ role: "student" }).select("-password").lean()
   }
 
   /** Stub: real student→teachers lookup */
   static async getRelatedTeachers(studentId: string) {
-    return UsersCollection.find({ role: "teacher" }).lean()
+    return UsersCollection.find({ role: "teacher" }).select("-password").lean()
   }
 
-  /**
-   * Fetch a user by either:
-   * 1. MongoDB _id (if valid ObjectId), or
-   * 2. your custom `id` field (`user_…`)
-   */
   static async getUserById(id: string): Promise<UserDocument | null> {
     let user: UserDocument | null = null
     if (Types.ObjectId.isValid(id)) {
-      user = await UsersCollection.findById(id).lean()
+      user = await UsersCollection.findById(id).select("-password").lean()
     }
     if (!user) {
-      user = await UsersCollection.findOne({ id }).lean()
+      user = await UsersCollection.findOne({ id }).select("-password").lean()
     }
     if (!user) {
       throw new AppError(`No user found with id="${id}"`, NOT_FOUND)
@@ -61,12 +60,13 @@ export class UserService {
 
   /** Update by custom or ObjectId */
   static async updateUser(id: string, data: Partial<UserDocument>) {
-    let filter: any
-    if (Types.ObjectId.isValid(id)) filter = { _id: id }
-    else filter = { id }
+    const filter = Types.ObjectId.isValid(id) ? { _id: id } : { id }
     const updated = await UsersCollection.findOneAndUpdate(filter, data, {
       new: true,
-    }).lean()
+    })
+      .select("-password")
+      .lean()
+
     if (!updated) {
       throw new AppError(`No user to update with id="${id}"`, NOT_FOUND)
     }
@@ -75,17 +75,18 @@ export class UserService {
 
   /** Delete by custom or ObjectId */
   static async deleteUser(id: string) {
-    let filter: any
-    if (Types.ObjectId.isValid(id)) filter = { _id: id }
-    else filter = { id }
-    const deleted = await UsersCollection.findOneAndDelete(filter).lean()
+    const filter = Types.ObjectId.isValid(id) ? { _id: id } : { id }
+    const deleted = await UsersCollection.findOneAndDelete(filter)
+      .select("-password")
+      .lean()
+
     if (!deleted) {
       throw new AppError(`No user to delete with id="${id}"`, NOT_FOUND)
     }
     return deleted
   }
 
-  // ─── Leaves ───────────────────────────────────────────────────
+  // ─── Leaves ───────────────────────────────────
 
   static async getUserLeaves(userId: string) {
     return LeaveCollection.find({ user: userId }).lean()
