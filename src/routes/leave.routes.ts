@@ -9,7 +9,7 @@ const router = Router({ mergeParams: true })
 router.post(
   "/leaves",
   authenticate,
-  authorize("student"),
+  authorize("student", "admin"),
   LeaveController.applyLeave
 )
 
