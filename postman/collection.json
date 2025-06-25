@@ -341,12 +341,12 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\"attendeeId\":\"user_01JYHCZQYK8HQ8S820AWAYHVB3\"}"
+              "raw": "{\"attendeeId\":\"user_01JYHCZQYK8HQ8S820AWAYHVB3\",\"status\":\"present\"}"
             }
           }
         },
         {
-          "name": "Get Attendance",
+          "name": "Get Attendance (All)",
           "request": {
             "method": "GET",
             "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
@@ -354,6 +354,35 @@
               "raw": "{{base_url}}/classes/{{classId}}/attendance",
               "host": ["{{base_url}}"],
               "path": ["classes", "{{classId}}", "attendance"]
+            }
+          }
+        },
+        {
+          "name": "Get Attendance by Date",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/classes/{{classId}}/attendance?date={{date}}",
+              "host": ["{{base_url}}"],
+              "path": ["classes", "{{classId}}", "attendance"],
+              "query": [{ "key": "date", "value": "{{date}}" }]
+            }
+          }
+        },
+        {
+          "name": "Get Attendance by Range",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{base_url}}/classes/{{classId}}/attendance?from={{from_date}}&to={{to_date}}",
+              "host": ["{{base_url}}"],
+              "path": ["classes", "{{classId}}", "attendance"],
+              "query": [
+                { "key": "from", "value": "{{from_date}}" },
+                { "key": "to", "value": "{{to_date}}" }
+              ]
             }
           }
         }
@@ -470,6 +499,9 @@
   ],
   "variable": [
     { "key": "base_url", "value": "http://localhost:3000" },
-    { "key": "token", "value": "" }
+    { "key": "token", "value": "" },
+    { "key": "date", "value": "2025-07-01" },
+    { "key": "from_date", "value": "2025-07-01" },
+    { "key": "to_date", "value": "2025-07-07" }
   ]
 }

@@ -1,11 +1,11 @@
 // src/routes/attendance.routes.ts
 import { Router } from "express"
 import { authenticate, authorize } from "../middleware/auth.middleware"
-import { AttendanceController } from "../controllers/attendance.controller"
+import AttendanceController from "../controllers/attendance.controller"
 
 const router = Router({ mergeParams: true })
 
-// Record attendance for a class session (teacher/admin)
+// Record attendance with status (teacher/admin)
 router.post(
   "/attendance",
   authenticate,
@@ -13,7 +13,7 @@ router.post(
   AttendanceController.recordAttendance
 )
 
-// Get attendance records for a class (RBAC inside controller)
+// Get attendance, filterable by date or date range
 router.get(
   "/attendance",
   authenticate,

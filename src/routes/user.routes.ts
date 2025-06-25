@@ -22,7 +22,7 @@ router.delete(
 router.get(
   "/teachers",
   authenticate,
-  authorize("student"),
+  authorize("student", "admin"),
   UserController.getMyTeachers
 )
 
@@ -30,7 +30,7 @@ router.get(
 router.get(
   "/students",
   authenticate,
-  authorize("teacher"),
+  authorize("teacher", "admin"),
   UserController.getMyStudents
 )
 
